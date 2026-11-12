@@ -204,18 +204,13 @@
   gsap.to(".about__frame", { clipPath: "inset(0% 0 0 0)", ease: "none", scrollTrigger: { trigger: ".about__media", start: "top 88%", end: "top 30%", scrub: 0.5 } });
   gsap.fromTo(".about__frame img", { yPercent: -13 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: ".about__media", start: "top bottom", end: "bottom top", scrub: true } });
 
-  /* ---------- journey: the logo arrow draws itself ---------- */
-  const line = $(".journey__line");
-  const len = line.getTotalLength();
-  gsap.set(line, { strokeDasharray: len, strokeDashoffset: len });
-  gsap.set(".journey__head-arrow", { scale: 0, transformOrigin: "50% 50%" });
-  const marks = [0, 0.27, 0.68, 0.96];           // path progress at which each milestone takes over
-  const steps = $$(".journey__steps li"), dots = $$(".journey__dot"), tabs = $$(".journey__tabs li");
+  /* ---------- journey: one milestone at a time beside his photo ---------- */
+  const marks = [0, 0.25, 0.5, 0.75];            // scroll progress at which each milestone takes over
+  const steps = $$(".journey__steps li"), tabs = $$(".journey__tabs li");
   const mm = gsap.matchMedia();
   let current = -1;
   const showStep = (p) => {                       // one milestone on screen at a time
     const idx = Math.max(0, marks.filter((m) => p >= m - 0.01).length - 1);
-    dots.forEach((d, i) => d.classList.toggle("is-on", i <= idx));
     if (idx === current) return;
     current = idx;
     steps.forEach((s, i) => s.classList.toggle("is-current", i === idx));
@@ -225,9 +220,8 @@
     defaults: { ease: "none" },
     scrollTrigger: { trigger: ".journey", start: "top top", end: "+=260%", pin: ".journey__stage", scrub: 0.5 },
   })
-    .to(line, { strokeDashoffset: 0, duration: 1, onUpdate() { showStep(this.progress()); } })
-    .to(".journey__head-arrow", { scale: 1, duration: 0.1, ease: "back.out(2.5)" }, 0.95)
-    .to({}, { duration: 0.18 });                  // hold on the last milestone before moving on
+    .to(".journey__bar i", { scaleX: 1, duration: 1, onUpdate() { showStep(this.progress()); } }, 0)
+    .fromTo(".journey__photo img", { scale: 1.18 }, { scale: 1, duration: 1 }, 0);   // slow pull-back as you scroll
   showStep(0);
 
   /* ---------- services: horizontal scroll (RTL: track travels right) ---------- */
