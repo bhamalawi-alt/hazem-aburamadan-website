@@ -138,7 +138,7 @@ h3 { font-family: var(--display); font-weight: 700; line-height: 1.45; }
   .hero .hero__copy h2 { margin-bottom: 18px; }
   .hero__cta .btn { padding: 12px 22px; font-size: 19px; }
   .hero__cue { inset-inline-start: auto; inset-inline-end: var(--pad); }
-  .hero__cta--first { display: none; }
+  .hero .hero__cta--first { display: none; }
 }
 
 /* ---------- marquee ---------- */
