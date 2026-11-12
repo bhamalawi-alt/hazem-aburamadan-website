@@ -107,7 +107,6 @@
     start: 0, end: "max",
     onUpdate: (self) => {
       top.classList.toggle("is-solid", self.scroll() > 80);
-      top.classList.toggle("is-hidden", self.direction === 1 && self.scroll() > innerHeight);
     },
   });
 
@@ -250,8 +249,8 @@
   });
 
   /* ---------- voices: columns slide against each other ---------- */
-  // the header would be unreadable over the light band, so it steps away there
-  ScrollTrigger.create({ trigger: ".voices", start: "top 70px", end: "bottom 70px", toggleClass: { targets: top, className: "is-away" } });
+  // over the light band the header switches to dark text and the dark-H logo
+  ScrollTrigger.create({ trigger: ".voices", start: "top 50px", end: "bottom 50px", toggleClass: { targets: top, className: "is-light" } });
   mm.add("(min-width: 701px)", () => {
     $$(".voices__col").forEach((col) => {
       gsap.fromTo(col, { y: -col.dataset.speed }, { y: +col.dataset.speed, ease: "none", scrollTrigger: { trigger: ".voices__cols", start: "top bottom", end: "bottom top", scrub: true } });
