@@ -1,0 +1,19 @@
+/* ewfe-animations.css */
+.ewfe-spin-animation {
+	display: inline-flex;
+	animation-name: ewfe-spin;
+	/* animation-duration will be injected by Elementor selectors; fallback below */
+	animation-duration: 10s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	transform-origin: center center;
+}
+
+@keyframes ewfe-spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
