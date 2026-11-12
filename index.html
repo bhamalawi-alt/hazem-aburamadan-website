@@ -17,8 +17,9 @@
 <link rel="icon" href="assets/img/logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;500;700;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="assets/seq/f_001.webp">
+<link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Cairo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="assets/seq/f_001.webp" media="(min-width: 861px), (orientation: landscape)">
+<link rel="preload" as="image" href="assets/seqm/f_001.webp" media="(max-width: 860px) and (orientation: portrait)">
 <link rel="stylesheet" href="assets/css/style.css">
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Person","name":"حازم أبو رمضان","alternateName":"Hazem Abu Ramadan","jobTitle":"مهندس ومستشار رقمي","url":"https://hazemaburamadan.com/","email":"contact@hazemaburamadan.com","sameAs":["https://www.youtube.com/@HazemAbuRamadan","https://www.instagram.com/hazem.abu.ramadan/","https://www.tiktok.com/@hazem_aburamadan"]}
@@ -30,7 +31,7 @@
 
 <header class="top">
   <a class="brand" href="#hero" aria-label="حازم أبو رمضان — الرئيسية">
-    <svg class="mark" viewBox="0 0 64 64" aria-hidden="true"><path d="M4 52 24 30l12 10L54 14" fill="none" stroke="currentColor" stroke-width="9" stroke-linejoin="miter"/><path d="M40 8h20v20z" fill="currentColor"/></svg>
+    <img class="mark" src="assets/img/logo-mark.png" alt="" width="190" height="192">
     <span>حازم أبو رمضان</span>
   </a>
   <nav class="nav" aria-label="التنقل الرئيسي">
@@ -49,12 +50,15 @@
 <section class="hero" id="hero">
   <div class="hero__stage">
     <canvas class="hero__canvas" aria-hidden="true"></canvas>
-    <img class="hero__poster" src="assets/seq/f_001.webp" alt="المهندس حازم أبو رمضان جالسًا ببدلة كحلية">
+    <picture>
+      <source media="(max-width: 860px) and (orientation: portrait)" srcset="assets/seqm/f_001.webp">
+      <img class="hero__poster" src="assets/seq/f_001.webp" alt="المهندس حازم أبو رمضان واقفًا بثقة وذراعاه متشابكتان">
+    </picture>
     <div class="hero__scrim" aria-hidden="true"></div>
 
     <div class="hero__copy" data-phase="0">
       <p class="eyebrow">م. حازم أبو رمضان — مهندس ومستشار رقمي</p>
-      <h1>الإنجازات العظيمة<br>لا تأتي من <em>منطقة الراحة</em></h1>
+      <h1>الإنجازات العظيمة<br><em>لا تأتي من منطقة الراحة</em></h1>
     </div>
 
     <div class="hero__copy" data-phase="1" aria-hidden="true">
