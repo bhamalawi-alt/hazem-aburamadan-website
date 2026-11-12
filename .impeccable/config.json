@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "new/assets/css/style.css"
+        ],
+        "createdAt": "2026-11-12T22:42:29.788Z",
+        "reason": "Claude: L190 is a CSS border triangle drawing the play icon on video thumbnails, not a card accent border"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "new/index.html"
+        ],
+        "createdAt": "2026-11-12T22:45:53.149Z",
+        "reason": "Claude: flagged wrappers (hero__stage, journey, project, voices) are inset by var(--pad) padding or absolute insets in style.css; verified in browser screenshots at 1440px and 375px"
+      }
+    ]
+  }
+}
