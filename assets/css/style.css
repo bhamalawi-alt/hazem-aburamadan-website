@@ -162,24 +162,33 @@ h3 { font-family: var(--display); font-weight: 700; line-height: 1.45; }
 /* ---------- journey ---------- */
 .journey { position: relative; background: var(--ink-2); }
 .journey__stage { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; gap: clamp(14px, 2.4vh, 30px); padding: clamp(80px, 11vh, 120px) var(--pad) clamp(30px, 5vh, 60px); overflow: hidden; }
-.journey__svg { width: 100%; max-height: 44vh; overflow: visible; direction: ltr; }
+.journey__head h2 { font-size: clamp(30px, 4vw, 60px); }
+.journey__body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(24px, 5vw, 80px); align-items: center; }
+/* one milestone on screen at a time, set large */
+.journey__steps { display: grid; }
+.journey__steps li { grid-area: 1 / 1; opacity: 0; transform: translateY(26px); transition: opacity .5s var(--ease), transform .6s var(--ease); pointer-events: none; }
+.journey__steps li.is-current { opacity: 1; transform: none; pointer-events: auto; }
+.journey__steps b { display: block; font-family: var(--display); font-weight: 700; font-size: clamp(22px, 2vw, 30px); color: var(--yellow); direction: ltr; text-align: right; margin-bottom: 6px; }
+.journey__steps h3 { font-size: clamp(54px, 7.5vw, 124px); line-height: 1.3; margin-bottom: clamp(10px, 2vh, 22px); }
+.journey__steps p { font-size: clamp(24px, 2.5vw, 38px); line-height: 1.75; color: var(--text); max-width: 20em; }
+.journey__svg { width: 100%; max-height: 48vh; overflow: visible; direction: ltr; }
 .journey__ghost { fill: none; stroke: var(--line); stroke-width: 3; stroke-dasharray: 6 10; }
-.journey__line { fill: none; stroke: var(--yellow); stroke-width: 20; stroke-linejoin: miter; }
+.journey__line { fill: none; stroke: var(--yellow); stroke-width: 22; stroke-linejoin: miter; }
 .journey__head-arrow { fill: var(--yellow); }
 .journey__dot { fill: var(--ink-2); stroke: var(--line); stroke-width: 3; transition: fill .4s, stroke .4s; }
 .journey__dot.is-on { fill: var(--paper); stroke: var(--yellow); }
-.journey__steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(14px, 2vw, 34px); direction: ltr; }
-.journey__steps li { direction: rtl; border-top: 2px solid var(--line); padding-top: 16px; opacity: .3; transition: opacity .5s, border-color .5s; }
-.journey__steps li.is-on { opacity: 1; border-color: var(--yellow); }
-.journey__steps b { font-family: var(--display); font-weight: 900; color: var(--yellow); font-size: 18px; direction: ltr; display: block; text-align: right; }
-.journey__steps h3 { font-size: clamp(24px, 2.44vw, 38px); margin: 4px 0 6px; }
-.journey__steps p { color: var(--muted); font-size: 20px; line-height: 1.75; }
-.journey__method { font-family: var(--display); font-weight: 500; color: var(--muted); font-size: clamp(18px, 1.59vw, 22px); }
+.journey__tabs { display: flex; flex-wrap: wrap; gap: 10px; }
+.journey__tabs li { font-family: var(--display); font-weight: 700; font-size: clamp(18px, 1.5vw, 22px); padding: 8px 22px; border-radius: 999px; border: 1.5px solid var(--line); color: var(--muted); transition: background .35s, color .35s, border-color .35s; }
+.journey__tabs li.is-current { background: var(--yellow); border-color: var(--yellow); color: var(--ink); }
+.journey__method { font-family: var(--display); color: var(--muted); font-size: clamp(19px, 1.6vw, 24px); }
 .journey__method span { color: var(--text); }
 @media (max-width: 860px) {
-  .journey__steps { grid-template-columns: 1fr 1fr; }
-  .journey__svg { max-height: 30vh; }
-  .journey__line { stroke-width: 26; }
+  .journey__body { grid-template-columns: 1fr; gap: 14px; }
+  .journey__svg { order: -1; max-height: 24vh; }
+  .journey__line { stroke-width: 28; }
+  .journey__steps h3 { font-size: clamp(50px, 15vw, 72px); }
+  .journey__steps p { font-size: clamp(23px, 6.2vw, 28px); }
+  .journey__tabs li { padding: 6px 14px; font-size: 17px; }
 }
 
 /* ---------- services ---------- */
@@ -326,7 +335,8 @@ h3 { font-family: var(--display); font-weight: 700; line-height: 1.45; }
   .hero__cue { display: none; }
   .reveal-words .w { opacity: 1; }
   .about__frame { clip-path: none; }
-  .journey__steps li { opacity: 1; }
+  .journey__steps li { grid-area: auto; opacity: 1; transform: none; margin-bottom: 28px; }
+  .journey__tabs { display: none; }
   .services__stage { height: auto; overflow-x: auto; padding-block: 80px; }
   * { animation: none !important; transition: none !important; }
 }

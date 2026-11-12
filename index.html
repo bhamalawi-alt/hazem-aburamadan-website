@@ -113,21 +113,26 @@
       <p class="eyebrow">الرحلة</p>
       <h2>سنوات لم تكن <em>طريقًا مستقيمًا</em></h2>
     </div>
-    <svg class="journey__svg" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-      <path class="journey__ghost" d="M40 470 L330 300 L560 400 L850 190 L960 250 L1140 52"/>
-      <path class="journey__line" d="M40 470 L330 300 L560 400 L850 190 L960 250 L1140 52"/>
-      <path class="journey__head-arrow" d="M1078 8 H1188 V118 Z"/>
-      <circle class="journey__dot" data-i="0" cx="40" cy="470" r="11"/>
-      <circle class="journey__dot" data-i="1" cx="330" cy="300" r="11"/>
-      <circle class="journey__dot" data-i="2" cx="850" cy="190" r="11"/>
-      <circle class="journey__dot" data-i="3" cx="1140" cy="52" r="11"/>
-    </svg>
-    <ol class="journey__steps">
-      <li data-i="0"><b>01</b><h3>البداية</h3><p>دخول عالم المواقع والعمل الرقمي، والتعلّم من المشاريع الأولى.</p></li>
-      <li data-i="1"><b>02</b><h3>التجربة</h3><p>تنفيذ مشاريع متنوعة، وفهم السوق واحتياجات العملاء الفعلية.</p></li>
-      <li data-i="2"><b>03</b><h3>التوسع</h3><p>العمل على المنتجات الرقمية والتسويق وتطوير نماذج المشاريع.</p></li>
-      <li data-i="3"><b>04</b><h3>اليوم</h3><p>تقديم الحلول والاستشارات ومشاركة المعرفة بصورة عملية وواقعية.</p></li>
-    </ol>
+    <div class="journey__body">
+      <ol class="journey__steps">
+        <li class="is-current"><b>01</b><h3>البداية</h3><p>دخول عالم المواقع والعمل الرقمي، والتعلّم من المشاريع الأولى.</p></li>
+        <li><b>02</b><h3>التجربة</h3><p>تنفيذ مشاريع متنوعة، وفهم السوق واحتياجات العملاء الفعلية.</p></li>
+        <li><b>03</b><h3>التوسع</h3><p>العمل على المنتجات الرقمية والتسويق وتطوير نماذج المشاريع.</p></li>
+        <li><b>04</b><h3>اليوم</h3><p>تقديم الحلول والاستشارات ومشاركة المعرفة بصورة عملية وواقعية.</p></li>
+      </ol>
+      <svg class="journey__svg" viewBox="0 0 1200 520" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <path class="journey__ghost" d="M40 470 L330 300 L560 400 L850 190 L960 250 L1140 52"/>
+        <path class="journey__line" d="M40 470 L330 300 L560 400 L850 190 L960 250 L1140 52"/>
+        <path class="journey__head-arrow" d="M1078 8 H1188 V118 Z"/>
+        <circle class="journey__dot" cx="40" cy="470" r="13"/>
+        <circle class="journey__dot" cx="330" cy="300" r="13"/>
+        <circle class="journey__dot" cx="850" cy="190" r="13"/>
+        <circle class="journey__dot" cx="1140" cy="52" r="13"/>
+      </svg>
+    </div>
+    <ul class="journey__tabs" aria-hidden="true">
+      <li class="is-current">البداية</li><li>التجربة</li><li>التوسع</li><li>اليوم</li>
+    </ul>
     <p class="journey__method">منهجي في العمل: <span>أفهم</span> ← <span>أخطط</span> ← <span>أنفّذ</span> ← <span>أطوّر</span></p>
   </div>
 </section>

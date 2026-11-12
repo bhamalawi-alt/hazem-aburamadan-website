@@ -209,27 +209,26 @@
   const len = line.getTotalLength();
   gsap.set(line, { strokeDasharray: len, strokeDashoffset: len });
   gsap.set(".journey__head-arrow", { scale: 0, transformOrigin: "50% 50%" });
-  const marks = [0, 0.27, 0.68, 0.985];          // path progress at which each milestone lights up
-  const steps = $$(".journey__steps li"), dots = $$(".journey__dot");
+  const marks = [0, 0.27, 0.68, 0.96];           // path progress at which each milestone takes over
+  const steps = $$(".journey__steps li"), dots = $$(".journey__dot"), tabs = $$(".journey__tabs li");
   const mm = gsap.matchMedia();
-  const journeyTl = (st) => {
-    const tl = gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: st });
-    tl.to(line, { strokeDashoffset: 0, duration: 1, onUpdate() {
-      const p = this.progress();
-      marks.forEach((m, i) => {
-        steps[i].classList.toggle("is-on", p >= m - 0.01);
-        dots[i].classList.toggle("is-on", p >= m - 0.01);
-      });
-    } })
-      .to(".journey__head-arrow", { scale: 1, duration: 0.12, ease: "back.out(2.5)" }, 0.97);
-    return tl;
+  let current = -1;
+  const showStep = (p) => {                       // one milestone on screen at a time
+    const idx = Math.max(0, marks.filter((m) => p >= m - 0.01).length - 1);
+    dots.forEach((d, i) => d.classList.toggle("is-on", i <= idx));
+    if (idx === current) return;
+    current = idx;
+    steps.forEach((s, i) => s.classList.toggle("is-current", i === idx));
+    tabs.forEach((t, i) => t.classList.toggle("is-current", i === idx));
   };
-  mm.add("(min-width: 861px)", () => {
-    journeyTl({ trigger: ".journey", start: "top top", end: "+=180%", pin: ".journey__stage", scrub: 0.5 });
-  });
-  mm.add("(max-width: 860px)", () => {
-    journeyTl({ trigger: ".journey__svg", start: "top 75%", end: "bottom 25%", scrub: 0.5 });
-  });
+  gsap.timeline({
+    defaults: { ease: "none" },
+    scrollTrigger: { trigger: ".journey", start: "top top", end: "+=260%", pin: ".journey__stage", scrub: 0.5 },
+  })
+    .to(line, { strokeDashoffset: 0, duration: 1, onUpdate() { showStep(this.progress()); } })
+    .to(".journey__head-arrow", { scale: 1, duration: 0.1, ease: "back.out(2.5)" }, 0.95)
+    .to({}, { duration: 0.18 });                  // hold on the last milestone before moving on
+  showStep(0);
 
   /* ---------- services: horizontal scroll (RTL: track travels right) ---------- */
   const sTrack = $(".services__track");
