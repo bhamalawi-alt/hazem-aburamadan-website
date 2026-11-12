@@ -73,8 +73,12 @@
 })();
 
 (() => {
-  const FRAME_COUNT = 101;                       // frames in assets/seq (f_001.webp …)
-  const framePath = (i) => `assets/seq/f_${String(i + 1).padStart(3, "0")}.webp`;
+  const portrait = matchMedia("(max-width: 860px) and (orientation: portrait)").matches;
+  const SEQ = portrait
+    ? { dir: "assets/seqm", count: 101, fx: 0.5, fy: 1 }       // tall clip: subject low, space above
+    : { dir: "assets/seq", count: 101, fx: 0.25, fy: 0.2 };    // wide clip: subject left, space right
+  const FRAME_COUNT = SEQ.count;
+  const framePath = (i) => `${SEQ.dir}/f_${String(i + 1).padStart(3, "0")}.webp`;
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -137,7 +141,7 @@
     const cw = canvas.width, ch = canvas.height;
     const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);   // cover
     const w = img.naturalWidth * s, h = img.naturalHeight * s;
-    ctx.drawImage(img, (cw - w) / 2, (ch - h) * 0.3, w, h);              // keep the face in frame
+    ctx.drawImage(img, (cw - w) * SEQ.fx, (ch - h) * SEQ.fy, w, h);        // keep the subject in frame
     canvas.classList.add("is-ready");
   }
   // load frame 0 first, then the rest in scroll order
@@ -170,7 +174,7 @@
     .to(phases[1], { autoAlpha: 1, y: 0, duration: 1 }, 3.6)
     .to(phases[1], { autoAlpha: 0, y: -50, duration: 1 }, 6)
     .to(phases[2], { autoAlpha: 1, y: 0, duration: 1 }, 7.2)
-    .to(".hero__scrim", { backgroundColor: "rgba(11,11,12,.35)", duration: 2 }, 8);
+    .to(".hero__scrim", { backgroundColor: "rgba(11,11,12,.25)", duration: 2 }, 8);
 
   // count-up numbers, driven by the same scroll
   $$("[data-count]").forEach((el) => {
@@ -246,6 +250,8 @@
   });
 
   /* ---------- voices: columns slide against each other ---------- */
+  // the header would be unreadable over the light band, so it steps away there
+  ScrollTrigger.create({ trigger: ".voices", start: "top 70px", end: "bottom 70px", toggleClass: { targets: top, className: "is-away" } });
   mm.add("(min-width: 701px)", () => {
     $$(".voices__col").forEach((col) => {
       gsap.fromTo(col, { y: -col.dataset.speed }, { y: +col.dataset.speed, ease: "none", scrollTrigger: { trigger: ".voices__cols", start: "top bottom", end: "bottom top", scrub: true } });
