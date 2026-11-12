@@ -1,0 +1,255 @@
+/* hazemaburamadan.com — scroll-linked interactions (GSAP + ScrollTrigger + Lenis) */
+/* ---------- project brief form (runs with or without animations) ---------- */
+(() => {
+  const form = document.querySelector(".brief");
+  if (!form) return;
+  const ENDPOINT = form.dataset.endpoint || "";      // form-service URL; empty = open the visitor's email app
+  const steps = [...form.querySelectorAll(".brief__step")];
+  const back = form.querySelector("[data-back]"), next = form.querySelector("[data-next]"), send = form.querySelector("[data-send]");
+  const count = form.querySelector(".brief__count b"), bar = form.querySelector(".brief__progress i"), status = form.querySelector(".brief__status");
+  let i = 0;
+  form.classList.add("is-stepped");
+  form.noValidate = true;
+
+  const say = (msg, cls = "") => { status.textContent = msg; status.className = "brief__status " + cls; };
+  const show = (n, focus) => {
+    i = n;
+    steps.forEach((s, k) => s.classList.toggle("is-current", k === i));
+    count.textContent = i + 1;
+    bar.style.width = ((i + 1) / steps.length) * 100 + "%";
+    back.hidden = i === 0;
+    next.hidden = i === steps.length - 1;
+    send.hidden = i !== steps.length - 1;
+    say("");
+    if (focus) steps[i].querySelector("input, textarea").focus({ preventScroll: true });
+    window.ScrollTrigger?.refresh();
+  };
+  const valid = (step) => {
+    for (const el of step.querySelectorAll("input, textarea")) {
+      if (el.name === "_gotcha" || el.checkValidity()) continue;
+      say(el.type === "radio" ? "اختر إجابة للمتابعة." : el.type === "email" && el.value ? "تحقّق من البريد الإلكتروني." : "أكمل الحقول المطلوبة للمتابعة.", "is-error");
+      if (el.type !== "radio") el.focus();
+      return false;
+    }
+    return true;
+  };
+  next.addEventListener("click", () => valid(steps[i]) && show(i + 1, true));
+  back.addEventListener("click", () => show(i - 1, true));
+  // picking the project type moves on by itself
+  steps[0].addEventListener("change", () => setTimeout(() => i === 0 && show(1), 250));
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!valid(steps[i])) return;
+    const data = new FormData(form);
+    if (data.get("_gotcha")) return;
+    data.delete("_gotcha");
+    if (!ENDPOINT) {
+      const body = [...data].filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`).join("\n");
+      location.href = "mailto:contact@hazemaburamadan.com?subject=" + encodeURIComponent("مشروع جديد — " + data.get("نوع المشروع")) + "&body=" + encodeURIComponent(body);
+      form.classList.add("is-sent");
+      say("فُتح تطبيق البريد برسالة جاهزة — اضغط إرسال لإتمام الطلب.", "is-ok");
+      return;
+    }
+    send.disabled = true;
+    say("جارٍ الإرسال…");
+    try {
+      const r = await fetch(ENDPOINT, { method: "POST", headers: { Accept: "application/json" }, body: data });
+      if (!r.ok) throw new Error(r.status);
+      form.classList.add("is-sent");
+      say("وصلت تفاصيل مشروعك. سأراجعها وأعود إليك بالخطوة المناسبة.", "is-ok");
+    } catch {
+      send.disabled = false;
+      say("تعذّر الإرسال. حاول مرة أخرى أو راسلني على contact@hazemaburamadan.com", "is-error");
+    }
+    window.ScrollTrigger?.refresh();
+  });
+  show(0);
+})();
+
+(() => {
+  const FRAME_COUNT = 101;                       // frames in assets/seq (f_001.webp …)
+  const framePath = (i) => `assets/seq/f_${String(i + 1).padStart(3, "0")}.webp`;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+
+  if (reduce || !window.gsap) return;           // static, readable page (see CSS)
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------- smooth scroll ---------- */
+  const lenis = new Lenis({ lerp: 0.1 });
+  lenis.on("scroll", ScrollTrigger.update);
+  gsap.ticker.add((t) => lenis.raf(t * 1000));
+  gsap.ticker.lagSmoothing(0);
+  $$('a[href^="#"]').forEach((a) =>
+    a.addEventListener("click", (e) => {
+      const target = $(a.getAttribute("href"));
+      if (!target) return;
+      e.preventDefault();
+      lenis.scrollTo(target, { duration: 1.4 });
+    })
+  );
+
+  /* ---------- progress bar + header ---------- */
+  gsap.to(".progress i", { scaleX: 1, ease: "none", scrollTrigger: { start: 0, end: "max", scrub: 0.3 } });
+  const top = $(".top");
+  ScrollTrigger.create({
+    start: 0, end: "max",
+    onUpdate: (self) => {
+      top.classList.toggle("is-solid", self.scroll() > 80);
+      top.classList.toggle("is-hidden", self.direction === 1 && self.scroll() > innerHeight);
+    },
+  });
+
+  /* ---------- hero: scrubbed image sequence ---------- */
+  const canvas = $(".hero__canvas");
+  const ctx = canvas.getContext("2d");
+  const frames = new Array(FRAME_COUNT);
+  const state = { frame: 0 };
+  let drawn = -1;
+
+  const sizeCanvas = () => {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    canvas.width = Math.round(canvas.clientWidth * dpr);
+    canvas.height = Math.round(canvas.clientHeight * dpr);
+    drawn = -1;
+    draw();
+  };
+  const nearestLoaded = (i) => {
+    for (let d = 0; d < FRAME_COUNT; d++) {
+      if (frames[i - d]?.complete && frames[i - d].naturalWidth) return frames[i - d];
+      if (frames[i + d]?.complete && frames[i + d].naturalWidth) return frames[i + d];
+    }
+    return null;
+  };
+  function draw() {
+    const i = Math.round(state.frame);
+    const img = nearestLoaded(i);
+    if (!img) return;
+    if (i === drawn && frames[i] === img) return;
+    drawn = frames[i] === img ? i : -1;
+    const cw = canvas.width, ch = canvas.height;
+    const s = Math.max(cw / img.naturalWidth, ch / img.naturalHeight);   // cover
+    const w = img.naturalWidth * s, h = img.naturalHeight * s;
+    ctx.drawImage(img, (cw - w) / 2, (ch - h) * 0.3, w, h);              // keep the face in frame
+    canvas.classList.add("is-ready");
+  }
+  // load frame 0 first, then the rest in scroll order
+  const load = (i) => new Promise((res) => {
+    const img = new Image();
+    img.decoding = "async";
+    img.onload = img.onerror = () => { draw(); res(); };
+    img.src = framePath(i);
+    frames[i] = img;
+  });
+  load(0).then(async () => {
+    sizeCanvas();
+    for (let i = 1; i < FRAME_COUNT; i += 6) {
+      await Promise.all([0, 1, 2, 3, 4, 5].map((k) => (i + k < FRAME_COUNT ? load(i + k) : null)));
+    }
+  });
+  addEventListener("resize", sizeCanvas);
+
+  const phases = $$(".hero__copy");
+  gsap.set(phases, { autoAlpha: 0, y: 40 });
+  gsap.set(phases[0], { autoAlpha: 1, y: 0 });
+  const heroTl = gsap.timeline({
+    defaults: { ease: "none" },
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom bottom", scrub: 0.6 },
+  });
+  heroTl
+    .to(state, { frame: FRAME_COUNT - 1, duration: 10, onUpdate: draw }, 0)
+    .to(".hero__cue", { autoAlpha: 0, duration: 0.6 }, 0.2)
+    .to(phases[0], { autoAlpha: 0, y: -50, duration: 1 }, 2.4)
+    .to(phases[1], { autoAlpha: 1, y: 0, duration: 1 }, 3.6)
+    .to(phases[1], { autoAlpha: 0, y: -50, duration: 1 }, 6)
+    .to(phases[2], { autoAlpha: 1, y: 0, duration: 1 }, 7.2)
+    .to(".hero__scrim", { backgroundColor: "rgba(11,11,12,.35)", duration: 2 }, 8);
+
+  // count-up numbers, driven by the same scroll
+  $$("[data-count]").forEach((el) => {
+    const end = +el.dataset.count, o = { v: 0 };
+    heroTl.fromTo(o, { v: 0 }, { v: end, duration: 1.4, onUpdate: () => (el.textContent = Math.round(o.v)) }, 3.6);
+  });
+
+  /* ---------- marquee: drifts, and reacts to scroll velocity ---------- */
+  const track = $(".marquee__track");
+  const half = () => track.scrollWidth / 2;
+  let mx = 0, boost = 0;
+  ScrollTrigger.create({ start: 0, end: "max", onUpdate: (self) => (boost = self.getVelocity() / 260) });
+  gsap.ticker.add(() => {
+    mx -= 0.7 + Math.abs(boost);
+    boost *= 0.92;
+    if (-mx >= half()) mx += half();
+    track.style.transform = `translate3d(${mx}px,0,0)`;
+  });
+
+  /* ---------- about: words light up as you read ---------- */
+  $$(".reveal-words").forEach((p) => {
+    p.innerHTML = p.textContent.trim().split(/\s+/).map((w) => `<span class="w">${w}</span>`).join(" ");
+    gsap.to($$(".w", p), {
+      opacity: 1, stagger: 0.12, ease: "none",
+      scrollTrigger: { trigger: p, start: "top 82%", end: "bottom 45%", scrub: 0.4 },
+    });
+  });
+  gsap.to(".about__frame", { clipPath: "inset(0% 0 0 0)", ease: "none", scrollTrigger: { trigger: ".about__media", start: "top 88%", end: "top 30%", scrub: 0.5 } });
+  gsap.fromTo(".about__frame img", { yPercent: -13 }, { yPercent: 0, ease: "none", scrollTrigger: { trigger: ".about__media", start: "top bottom", end: "bottom top", scrub: true } });
+
+  /* ---------- journey: the logo arrow draws itself ---------- */
+  const line = $(".journey__line");
+  const len = line.getTotalLength();
+  gsap.set(line, { strokeDasharray: len, strokeDashoffset: len });
+  gsap.set(".journey__head-arrow", { scale: 0, transformOrigin: "50% 50%" });
+  const marks = [0, 0.27, 0.68, 0.985];          // path progress at which each milestone lights up
+  const steps = $$(".journey__steps li"), dots = $$(".journey__dot");
+  const mm = gsap.matchMedia();
+  const journeyTl = (st) => {
+    const tl = gsap.timeline({ defaults: { ease: "none" }, scrollTrigger: st });
+    tl.to(line, { strokeDashoffset: 0, duration: 1, onUpdate() {
+      const p = this.progress();
+      marks.forEach((m, i) => {
+        steps[i].classList.toggle("is-on", p >= m - 0.01);
+        dots[i].classList.toggle("is-on", p >= m - 0.01);
+      });
+    } })
+      .to(".journey__head-arrow", { scale: 1, duration: 0.12, ease: "back.out(2.5)" }, 0.97);
+    return tl;
+  };
+  mm.add("(min-width: 861px)", () => {
+    journeyTl({ trigger: ".journey", start: "top top", end: "+=180%", pin: ".journey__stage", scrub: 0.5 });
+  });
+  mm.add("(max-width: 860px)", () => {
+    journeyTl({ trigger: ".journey__svg", start: "top 75%", end: "bottom 25%", scrub: 0.5 });
+  });
+
+  /* ---------- services: horizontal scroll (RTL: track travels right) ---------- */
+  const sTrack = $(".services__track");
+  const travel = () => Math.max(0, sTrack.scrollWidth - innerWidth);
+  gsap.to(sTrack, {
+    x: travel, ease: "none",
+    scrollTrigger: { trigger: ".services", start: "top top", end: () => "+=" + travel(), pin: ".services__stage", scrub: 0.6, invalidateOnRefresh: true },
+  });
+
+  /* ---------- videos / plans: rise in ---------- */
+  [[".video", ".videos__grid"], [".plan", ".consult__grid"]].forEach(([item, wrap]) => {
+    gsap.from(item, { y: 90, autoAlpha: 0, stagger: 0.12, duration: 1, ease: "power3.out", scrollTrigger: { trigger: wrap, start: "top 82%" } });
+  });
+  $$("section h2, .contact__big").forEach((h) => {
+    if (h.closest(".hero")) return;
+    gsap.from(h, { y: 60, autoAlpha: 0, duration: 1.1, ease: "power3.out", scrollTrigger: { trigger: h, start: "top 88%" } });
+  });
+
+  /* ---------- voices: columns slide against each other ---------- */
+  mm.add("(min-width: 701px)", () => {
+    $$(".voices__col").forEach((col) => {
+      gsap.fromTo(col, { y: -col.dataset.speed }, { y: +col.dataset.speed, ease: "none", scrollTrigger: { trigger: ".voices__cols", start: "top bottom", end: "bottom top", scrub: true } });
+    });
+  });
+
+  /* ---------- contact: background drift ---------- */
+  gsap.fromTo(".contact__bg", { yPercent: -8 }, { yPercent: 8, ease: "none", scrollTrigger: { trigger: ".contact", start: "top bottom", end: "bottom bottom", scrub: true } });
+
+  addEventListener("load", () => ScrollTrigger.refresh());
+  document.fonts?.ready.then(() => ScrollTrigger.refresh());
+})();
