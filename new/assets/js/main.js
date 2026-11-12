@@ -3,7 +3,8 @@
 (() => {
   const form = document.querySelector(".brief");
   if (!form) return;
-  const ENDPOINT = form.dataset.endpoint || "";      // form-service URL; empty = open the visitor's email app
+  const KEY = form.dataset.accessKey || "";          // Web3Forms access key (public by design); empty = open the visitor's email app
+  const ENDPOINT = KEY ? "https://api.web3forms.com/submit" : "";
   const steps = [...form.querySelectorAll(".brief__step")];
   const back = form.querySelector("[data-back]"), next = form.querySelector("[data-next]"), send = form.querySelector("[data-send]");
   const count = form.querySelector(".brief__count b"), bar = form.querySelector(".brief__progress i"), status = form.querySelector(".brief__status");
@@ -51,11 +52,15 @@
       say("فُتح تطبيق البريد برسالة جاهزة — اضغط إرسال لإتمام الطلب.", "is-ok");
       return;
     }
+    data.append("access_key", KEY);
+    data.append("subject", "مشروع جديد — " + data.get("نوع المشروع"));
+    data.append("from_name", "موقع حازم أبو رمضان");
+    data.append("replyto", data.get("البريد الإلكتروني"));
     send.disabled = true;
     say("جارٍ الإرسال…");
     try {
       const r = await fetch(ENDPOINT, { method: "POST", headers: { Accept: "application/json" }, body: data });
-      if (!r.ok) throw new Error(r.status);
+      if (!r.ok || (await r.json()).success === false) throw new Error(r.status);
       form.classList.add("is-sent");
       say("وصلت تفاصيل مشروعك. سأراجعها وأعود إليك بالخطوة المناسبة.", "is-ok");
     } catch {
