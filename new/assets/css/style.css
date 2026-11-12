@@ -77,12 +77,27 @@ h3 { font-family: var(--display); font-weight: 700; line-height: 1.45; }
   position: fixed; inset: 0 0 auto 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between; gap: 20px;
   padding: 18px var(--pad);
-  transition: background .4s, padding .4s, transform .5s var(--ease);
+  transition: padding .4s, color .3s;
 }
-.top::before { content: ""; position: absolute; inset: 0 0 -40px 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgba(11,11,12,.9), rgba(11,11,12,0)); opacity: 0; transition: opacity .4s; }
+.top::before { content: ""; position: absolute; inset: 0 0 -40px 0; z-index: -1; pointer-events: none; background: linear-gradient(to bottom, rgba(11,11,12,.96) 0%, rgba(11,11,12,.9) 55%, rgba(11,11,12,0) 100%); opacity: 0; transition: opacity .4s; }
 .top.is-solid::before { opacity: 1; }
 .top.is-solid { padding-block: 12px; }
-.top.is-hidden, .top.is-away { transform: translateY(-110%); }
+.top.is-light { color: var(--ink); }
+.top.is-light::before { background: linear-gradient(to bottom, rgba(243,239,230,.97) 0%, rgba(243,239,230,.92) 55%, rgba(243,239,230,0) 100%); }
+.mark--dark { display: none; }
+.top.is-light .mark { display: none; }
+.top.is-light .mark--dark { display: block; }
+.top.is-light .btn { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.top.is-light .btn--ghost { background: transparent; color: var(--ink); border-color: rgba(11,11,12,.35); }
+.top__cta { display: flex; align-items: center; gap: 10px; }
+.top .btn--ghost { border-color: rgba(243,239,230,.4); }
+.hero__cta--first { margin-top: clamp(20px, 3.5vh, 40px); }
+@media (max-width: 560px) {
+  .brand span { display: none; }
+  .top { padding-inline: 14px; gap: 10px; }
+  .top__cta { gap: 6px; }
+  .top .btn--sm { padding: 8px 12px; font-size: 16px; }
+}
 .brand { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 700; font-size: 23px; }
 .mark { width: auto; height: 44px; }
 .nav { display: flex; gap: clamp(16px, 2.4vw, 38px); font-family: var(--display); font-weight: 500; font-size: 20px; }
@@ -123,6 +138,7 @@ h3 { font-family: var(--display); font-weight: 700; line-height: 1.45; }
   .hero .hero__copy h2 { margin-bottom: 18px; }
   .hero__cta .btn { padding: 12px 22px; font-size: 19px; }
   .hero__cue { inset-inline-start: auto; inset-inline-end: var(--pad); }
+  .hero__cta--first { display: none; }
 }
 
 /* ---------- marquee ---------- */
