@@ -108,7 +108,7 @@ h3 { font-family: var(--display); font-weight: 700; line-height: 1.45; }
 @media (max-width: 860px) { .nav { display: none; } }
 
 /* ---------- hero ---------- */
-.hero { position: relative; height: 420vh; }
+.hero { position: relative; height: 260vh; }
 .hero__stage { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; background: #0f1414; }
 .hero__canvas, .hero__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 25% 20%; }
 .hero__canvas { z-index: 1; opacity: 0; transition: opacity .5s; }
@@ -241,6 +241,9 @@ h3 { font-family: var(--display); font-weight: 700; line-height: 1.45; }
 .voices__col { display: grid; gap: clamp(16px, 2.4vw, 36px); align-content: start; }
 .voices__col:nth-child(2) { padding-top: clamp(30px, 8vw, 130px); }
 .voices blockquote { background: #fff; border-radius: 18px; padding: clamp(22px, 2.8vw, 44px); font-family: var(--display); font-weight: 500; font-size: clamp(21px, 2.07vw, 31px); line-height: 1.8; position: relative; box-shadow: 0 1px 0 rgba(11,11,12,.08); }
+.voices blockquote footer { margin-top: 18px; padding-top: 14px; border-top: 1px solid rgba(11,11,12,.12); }
+.voices blockquote cite { font-style: normal; font-weight: 700; font-size: clamp(18px, 1.4vw, 21px); color: var(--ink); unicode-bidi: plaintext; }
+.voices blockquote cite::before { content: "— "; color: var(--yellow-deep); }
 .voices blockquote::before { content: "”"; display: block; font-family: var(--display); font-weight: 900; font-size: 64px; line-height: .6; color: var(--yellow-deep); margin-bottom: 14px; }
 @media (max-width: 700px) { .voices__cols { grid-template-columns: 1fr; } .voices__col:nth-child(2) { padding-top: 0; } }
 
