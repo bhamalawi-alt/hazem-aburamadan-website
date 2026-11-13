@@ -164,7 +164,7 @@
   gsap.set(phases[0], { autoAlpha: 1, y: 0 });
   const heroTl = gsap.timeline({
     defaults: { ease: "none" },
-    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom bottom", scrub: 0.6 },
+    scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom bottom", scrub: 0.3 },
   });
   heroTl
     .to(state, { frame: FRAME_COUNT - 1, duration: 10, onUpdate: draw }, 0)
